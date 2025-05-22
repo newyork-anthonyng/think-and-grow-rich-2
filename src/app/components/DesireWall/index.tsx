@@ -1,12 +1,34 @@
 "use client";
-import MarkdownEditor from "@uiw/react-markdown-editor";
+import dynamic from "next/dynamic";
 import { useMachine } from "@xstate/react";
 import machine from "./machine";
 import { Button } from "@/components/ui/button";
 
+const MarkdownEditor = dynamic(
+  () => import("@uiw/react-markdown-editor").then((mod) => mod.default),
+  {
+    loading: () => <div>Loading editor...</div>,
+    ssr: false,
+  }
+);
+
+const MarkdownPreview = dynamic(
+  async () => {
+    const mod = await import("@uiw/react-markdown-editor");
+    const MarkdownComponent = mod.default.Markdown;
+
+    return MarkdownComponent;
+  },
+  {
+    loading: () => <div>Loading preview...</div>,
+    ssr: false,
+  }
+);
+
 function DesireWallContainer() {
   return <DesireWall />;
 }
+DesireWallContainer.displayName = "DesireWallContainer";
 
 function DesireWall() {
   const [state, send] = useMachine(machine);
@@ -20,7 +42,7 @@ function DesireWall() {
     return (
       <div className="flex gap-4">
         <div className="flex-3/4">
-          <MarkdownEditor.Markdown source={state.context.markdown} />
+          <MarkdownPreview source={state.context.markdown} />
         </div>
         <div>
           <Button onClick={handleEditClick}>Edit</Button>

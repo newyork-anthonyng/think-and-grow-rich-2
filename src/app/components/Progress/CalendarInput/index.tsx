@@ -20,7 +20,7 @@ function tileContentFactory(progressEntries: (Progress | PendingProgress)[]) {
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .map((entry) => entry.date);
 
-  return ({ date, view }: TileArgs) => {
+  const TileContent = ({ date, view }: TileArgs) => {
     if (view !== "month") return null;
 
     const shouldAddDecoration = datesToAddClassTo.find((dDate) =>
@@ -32,6 +32,9 @@ function tileContentFactory(progressEntries: (Progress | PendingProgress)[]) {
 
     return null;
   };
+  
+  TileContent.displayName = "TileContent";
+  return TileContent;
 }
 
 interface CalendarInputProps {
