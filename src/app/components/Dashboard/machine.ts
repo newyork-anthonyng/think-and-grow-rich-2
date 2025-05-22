@@ -68,17 +68,34 @@ const machine = createMachine(
       context: {
         progressEntries: ProgressType[];
       };
-      events: {
-        type: "CHANGE_PROGRESS_ENTRIES";
-        data: (ProgressType | PendingProgress)[];
-      };
+      events:
+        | {
+            type: "CHANGE_PROGRESS_ENTRIES";
+            data: (ProgressType | PendingProgress)[];
+          }
+        | {
+            type: "EDIT";
+          }
+        | {
+            type: "DONE";
+          };
     },
 
     states: {
       idle: {
         on: {
+          EDIT: {
+            target: "editing",
+          },
+        },
+      },
+      editing: {
+        on: {
           CHANGE_PROGRESS_ENTRIES: {
             actions: "cacheProgressEntries",
+          },
+          DONE: {
+            target: "idle",
           },
         },
       },
