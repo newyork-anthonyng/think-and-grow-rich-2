@@ -1,13 +1,6 @@
 import { createMachine, assign, assertEvent } from "xstate";
 import { PendingProgress, Progress as ProgressType } from "@/lib/types";
 
-const chartData: ProgressType[] = [
-  { actual: 186, goal: 200, date: new Date("2025-05-05") },
-  { actual: 205, goal: 250, date: new Date("2025-05-06") },
-  { actual: 237, goal: 300, date: new Date("2025-05-07") },
-  { actual: 373, goal: 350, date: new Date("2025-05-08") },
-];
-
 interface GoalRange {
   startDate: Date;
   endDate: Date;
@@ -41,13 +34,29 @@ const calculateGoal = (date: Date, range: GoalRange): number => {
   return Math.round(startGoal + daysFromStart * dailyIncrement);
 };
 
-// Example usage with current data
 const currentRange: GoalRange = {
   startDate: new Date("2025-05-01"),
   endDate: new Date("2025-05-31"),
   startGoal: 0,
   endGoal: 1000,
 };
+
+const calculateProgressEntries = (range: GoalRange): ProgressType[] => {
+  const progressEntries: ProgressType[] = [];
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(range.startDate);
+    date.setDate(date.getDate() + i);
+
+    const goal = calculateGoal(date, range);
+    const previousActual = progressEntries[i - 1]?.actual || 0;
+    const actual = previousActual + Math.floor(Math.random() * 50);
+
+    progressEntries.push({ actual, goal, date });
+  }
+  return progressEntries;
+};
+
+const chartData = calculateProgressEntries(currentRange);
 
 const machine = createMachine(
   {
