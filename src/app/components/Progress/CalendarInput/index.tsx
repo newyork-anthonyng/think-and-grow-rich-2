@@ -42,9 +42,8 @@ function tileContentFactory(progressEntries: Progress[]) {
     }
 
     return null;
-  }
+  };
 }
-
 
 function CalendarInput() {
   const [state, send] = useMachine(machine, {
@@ -53,27 +52,27 @@ function CalendarInput() {
         {
           actual: 10,
           goal: 20,
-          date: today
+          date: today,
         },
         {
           actual: 50,
           goal: 40,
-          date: tomorrow
+          date: tomorrow,
         },
         {
           actual: 50,
           goal: 60,
-          date: in2Days
+          date: in2Days,
         },
         {
           actual: 70,
           goal: 80,
-          date: in3Days
+          date: in3Days,
         },
         {
           actual: 90,
           goal: 100,
-          date: in4Days
+          date: in4Days,
         },
       ],
     },
@@ -91,6 +90,11 @@ function CalendarInput() {
 
   function handleSaveClick() {
     send({ type: "SAVE" });
+  }
+
+  function handleChangeNumberInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const number = parseInt(e.target.value);
+    send({ type: "CHANGE_NUMBER_INPUT", data: number });
   }
 
   if (state.matches("pending")) {
@@ -114,7 +118,11 @@ function CalendarInput() {
               Add entry for {state.context.selectedDate?.toLocaleDateString()}
             </DialogTitle>
           </DialogHeader>
-          <Input type="number" />
+          <Input
+            type="number"
+            value={state.context.numberInput ?? ""}
+            onChange={handleChangeNumberInput}
+          />
           <Button onClick={handleSaveClick}>Save</Button>
         </DialogContent>
       </Dialog>

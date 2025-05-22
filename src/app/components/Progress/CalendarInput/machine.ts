@@ -10,12 +10,14 @@ const machine = createMachine(
       progressEntries: input.data,
       currentDate: null,
       selectedDate: null,
+      numberInput: null,
     }),
     types: {} as {
       context: {
         progressEntries: Progress[];
         currentDate: Date | null;
         selectedDate: Date | null;
+        numberInput: number | null;
       };
       events:
         | {
@@ -27,6 +29,10 @@ const machine = createMachine(
           }
         | {
             type: "SAVE";
+          }
+        | {
+            type: "CHANGE_NUMBER_INPUT";
+            data: number;
           };
     },
     states: {
@@ -60,6 +66,9 @@ const machine = createMachine(
                     target: "closed",
                     actions: "saveProgressEntry",
                   },
+                  CHANGE_NUMBER_INPUT: {
+                    actions: "changeNumberInput",
+                  },
                 },
               },
             },
@@ -82,10 +91,17 @@ const machine = createMachine(
           selectedDate: event.data,
         };
       }),
+      changeNumberInput: assign(({ event }) => {
+        assertEvent(event, "CHANGE_NUMBER_INPUT");
+
+        return {
+          numberInput: event.data,
+        };
+      }),
       saveProgressEntry: assign(({ event, context }) => {
         assertEvent(event, "SAVE");
 
-        if (!context.selectedDate) {
+        if (!context.selectedDate || !context.numberInput) {
           return {};
         }
 
@@ -100,7 +116,7 @@ const machine = createMachine(
           newProgressEntries[index].actual = 10;
         } else {
           newProgressEntries.push({
-            actual: 10,
+            actual: context.numberInput,
             date: context.selectedDate,
             goal: 20,
           });
@@ -108,6 +124,7 @@ const machine = createMachine(
 
         return {
           progressEntries: newProgressEntries,
+          numberInput: null,
         };
       }),
     },
