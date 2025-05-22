@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Calendar, { TileArgs } from "react-calendar";
 import { isSameDay } from "date-fns";
-import { Value } from "react-calendar/src/shared/types.js";
 import "react-calendar/dist/Calendar.css";
 import {
   Dialog,
@@ -10,8 +9,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import { useMachine } from "@xstate/react";
+import machine from "./machine";
 
 const today = new Date();
 const tomorrow = new Date(today);
@@ -32,32 +32,30 @@ function tileContent({ date, view }: TileArgs) {
     isSameDay(dDate, date)
   );
   if (shouldAddClass) {
-    return <span className="absolute text-xs text-red-500">Yo</span>;
+    return (
+      <span className="absolute w-2 h-2 rounded-full bg-green-500" />
+    );
   }
 
   return null;
 }
 
 function CalendarInput() {
-  const [value, setValue] = useState<Value>(new Date());
+  const [state, send] = useMachine(machine);
   const [open, setOpen] = useState(false);
-  // const [open, setOpen] = useState(true);
-
-  const onChange = (date: Value) => {
-    setValue(date);
-  };
 
   const handleClickDay = (date: Date) => {
-    console.log(date);
     setOpen(true);
   };
 
+  if (state.matches('pending')) {
+    return null;
+  }
 
   return (
     <>
       <Calendar
-        onChange={onChange}
-        value={value}
+        value={state.context.date}
         tileContent={tileContent}
         onClickDay={handleClickDay}
       />
