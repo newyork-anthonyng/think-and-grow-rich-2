@@ -1,15 +1,19 @@
+import { Progress } from "@/lib/types";
+import { isSameDay } from "date-fns";
 import { createMachine, assign, assertEvent } from "xstate";
 
 const machine = createMachine(
   {
     id: "calendar",
     initial: "pending",
-    context: {
+    context: ({ input }: { input: { data: Progress[] } }) => ({
+      progressEntries: input.data,
       currentDate: null,
       selectedDate: null,
-    },
+    }),
     types: {} as {
       context: {
+        progressEntries: Progress[];
         currentDate: Date | null;
         selectedDate: Date | null;
       };
@@ -20,6 +24,9 @@ const machine = createMachine(
           }
         | {
             type: "CLOSE";
+          }
+        | {
+            type: "SAVE";
           };
     },
     states: {
@@ -40,7 +47,7 @@ const machine = createMachine(
                 on: {
                   OPEN: {
                     target: "opened",
-                    actions: 'cacheSelectedDate'
+                    actions: "cacheSelectedDate",
                   },
                 },
               },
@@ -48,6 +55,10 @@ const machine = createMachine(
                 on: {
                   CLOSE: {
                     target: "closed",
+                  },
+                  SAVE: {
+                    target: "closed",
+                    actions: "saveProgressEntry",
                   },
                 },
               },
@@ -69,6 +80,34 @@ const machine = createMachine(
 
         return {
           selectedDate: event.data,
+        };
+      }),
+      saveProgressEntry: assign(({ event, context }) => {
+        assertEvent(event, "SAVE");
+
+        if (!context.selectedDate) {
+          return {};
+        }
+
+        const newProgressEntries = [...context.progressEntries];
+
+        const index = newProgressEntries.findIndex(
+          (entry) =>
+            context.selectedDate && isSameDay(entry.date, context.selectedDate)
+        );
+
+        if (index !== -1) {
+          newProgressEntries[index].actual = 10;
+        } else {
+          newProgressEntries.push({
+            actual: 10,
+            date: context.selectedDate,
+            goal: 20,
+          });
+        }
+
+        return {
+          progressEntries: newProgressEntries,
         };
       }),
     },
