@@ -1,36 +1,50 @@
 "use client"
 
-import { Bar, BarChart } from "recharts"
+import { Line, LineChart } from "recharts"
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+import { Progress as ProgressType } from "@/lib/types"
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
+const chartData: ProgressType[] = [
+  { actual: 186, goal: 200, date: new Date("2025-01-01") },
+  { actual: 205, goal: 300, date: new Date("2025-01-02") },
+  { actual: 237, goal: 350, date: new Date("2025-01-03") },
+  { actual: 373, goal: 400, date: new Date("2025-01-04") },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#2563eb",
+  actual: {
+    label: "Actual",
+    color: "#3b82f6",
   },
-  mobile: {
-    label: "Mobile",
-    color: "#60a5fa",
+  goal: {
+    label: "Goal",
+    color: "#93c5fd",
   },
 } satisfies ChartConfig
 
 function Progress() {
   return (
     <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-      <BarChart accessibilityLayer data={chartData}>
-        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-        <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-      </BarChart>
+      <LineChart accessibilityLayer data={chartData}>
+        <Line 
+          type="monotone" 
+          dataKey="actual" 
+          stroke="var(--color-actual)" 
+          strokeWidth={2}
+          dot={{ r: 4 }}
+          activeDot={{ r: 6 }}
+        />
+        <Line 
+          type="monotone" 
+          dataKey="goal" 
+          stroke="var(--color-goal)" 
+          strokeWidth={2}
+          strokeDasharray="5 5"
+          dot={{ r: 4 }}
+          activeDot={{ r: 6 }}
+        />
+      </LineChart>
     </ChartContainer>
   )
 }
