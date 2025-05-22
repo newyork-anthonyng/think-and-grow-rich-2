@@ -5,7 +5,9 @@ export default function Home() {
   return (
     <div>
       <DesireWallContainer />
-      <Progress />
+      <div className="w-1/2">
+        <Progress />
+      </div>
     </div>
   );
 }
