@@ -84,11 +84,17 @@ const machine = createMachine(
           currentDate: new Date(),
         };
       }),
-      cacheSelectedDate: assign(({ event }) => {
+      cacheSelectedDate: assign(({ event, context }) => {
         assertEvent(event, "OPEN");
+
+        const foundDate = context.progressEntries.find((entry) =>
+          isSameDay(entry.date, event.data)
+        );
+        const numberInput = foundDate?.actual ?? null;
 
         return {
           selectedDate: event.data,
+          numberInput,
         };
       }),
       changeNumberInput: assign(({ event }) => {
@@ -112,8 +118,9 @@ const machine = createMachine(
             context.selectedDate && isSameDay(entry.date, context.selectedDate)
         );
 
-        if (index !== -1) {
-          newProgressEntries[index].actual = 10;
+        const isExistingEntry = index !== -1;
+        if (isExistingEntry) {
+          newProgressEntries[index].actual = context.numberInput;
         } else {
           newProgressEntries.push({
             actual: context.numberInput,

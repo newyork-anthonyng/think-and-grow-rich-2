@@ -103,6 +103,7 @@ function CalendarInput() {
 
   return (
     <>
+      <pre>{JSON.stringify(state.context, null, 2)}</pre>
       <Calendar
         value={state.context.selectedDate}
         tileContent={tileContentFactory(state.context.progressEntries)}
