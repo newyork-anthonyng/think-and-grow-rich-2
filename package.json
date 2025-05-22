@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.14",
     "@uiw/react-markdown-editor": "^6.1.4",
     "@xstate/react": "^5.0.4",
     "class-variance-authority": "^0.7.1",
