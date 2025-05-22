@@ -1,4 +1,4 @@
-import { Progress } from "@/lib/types";
+import { PendingProgress, Progress } from "@/lib/types";
 import { isSameDay } from "date-fns";
 import { createMachine, assign, assertEvent } from "xstate";
 
@@ -14,7 +14,7 @@ const machine = createMachine(
     }),
     types: {} as {
       context: {
-        progressEntries: Progress[];
+        progressEntries: (Progress | PendingProgress)[];
         currentDate: Date | null;
         selectedDate: Date | null;
         numberInput: number | null;
@@ -125,7 +125,6 @@ const machine = createMachine(
           newProgressEntries.push({
             actual: context.numberInput,
             date: context.selectedDate,
-            goal: 20,
           });
         }
 

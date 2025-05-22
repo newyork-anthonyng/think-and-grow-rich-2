@@ -12,23 +12,10 @@ import {
 import { useMachine } from "@xstate/react";
 import machine from "./machine";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/lib/types";
+import { PendingProgress, Progress } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
-const today = new Date();
-const tomorrow = new Date(today);
-tomorrow.setDate(today.getDate() + 1);
-
-const in2Days = new Date(today);
-in2Days.setDate(today.getDate() + 2);
-
-const in3Days = new Date(today);
-in3Days.setDate(today.getDate() + 3);
-
-const in4Days = new Date(today);
-in4Days.setDate(today.getDate() + 4);
-
-function tileContentFactory(progressEntries: Progress[]) {
+function tileContentFactory(progressEntries: (Progress | PendingProgress)[]) {
   const datesToAddClassTo = [...progressEntries]
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     .map((entry) => entry.date);
@@ -49,7 +36,7 @@ function tileContentFactory(progressEntries: Progress[]) {
 
 interface CalendarInputProps {
   progressEntries: Progress[];
-  onProgressEntriesChange: (progressEntries: Progress[]) => void;
+  onProgressEntriesChange: (progressEntries: (Progress | PendingProgress)[]) => void;
 }
 
 function CalendarInput({

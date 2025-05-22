@@ -1,6 +1,8 @@
-export interface Progress {
+export interface PendingProgress {
   actual: number;
-  goal: number;
   date: Date;
 }
 
+export interface Progress extends PendingProgress {
+  goal: number;
+}

@@ -2,14 +2,14 @@
 import DesireWallContainer from "../DesireWall";
 import Progress from "../Progress";
 import CalendarInput from "../Progress/CalendarInput";
-import { Progress as ProgressType } from "@/lib/types";
+import { PendingProgress, Progress as ProgressType } from "@/lib/types";
 import { useMachine } from "@xstate/react";
 import machine from "./machine";
 
 function Dashboard() {
   const [state, send] = useMachine(machine);
 
-  function handleProgressEntriesChange(progressEntries: ProgressType[]) {
+  function handleProgressEntriesChange(progressEntries: (ProgressType | PendingProgress)[]) {
     send({ type: "CHANGE_PROGRESS_ENTRIES", data: progressEntries });
   }
 
