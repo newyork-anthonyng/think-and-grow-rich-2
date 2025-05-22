@@ -45,36 +45,41 @@ function tileContentFactory(progressEntries: Progress[]) {
   };
 }
 
-function CalendarInput() {
+interface CalendarInputProps {  
+  progressEntries: Progress[];
+}
+
+function CalendarInput({ progressEntries }: CalendarInputProps) {
   const [state, send] = useMachine(machine, {
     input: {
-      data: [
-        {
-          actual: 10,
-          goal: 20,
-          date: today,
-        },
-        {
-          actual: 50,
-          goal: 40,
-          date: tomorrow,
-        },
-        {
-          actual: 50,
-          goal: 60,
-          date: in2Days,
-        },
-        {
-          actual: 70,
-          goal: 80,
-          date: in3Days,
-        },
-        {
-          actual: 90,
-          goal: 100,
-          date: in4Days,
-        },
-      ],
+      // data: [
+      //   {
+      //     actual: 10,
+      //     goal: 20,
+      //     date: today,
+      //   },
+      //   {
+      //     actual: 50,
+      //     goal: 40,
+      //     date: tomorrow,
+      //   },
+      //   {
+      //     actual: 50,
+      //     goal: 60,
+      //     date: in2Days,
+      //   },
+      //   {
+      //     actual: 70,
+      //     goal: 80,
+      //     date: in3Days,
+      //   },
+      //   {
+      //     actual: 90,
+      //     goal: 100,
+      //     date: in4Days,
+      //   },
+      // ],
+      data: progressEntries,
     },
   });
 
@@ -103,7 +108,6 @@ function CalendarInput() {
 
   return (
     <>
-      <pre>{JSON.stringify(state.context, null, 2)}</pre>
       <Calendar
         value={state.context.selectedDate}
         tileContent={tileContentFactory(state.context.progressEntries)}
