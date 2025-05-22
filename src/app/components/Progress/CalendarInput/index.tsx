@@ -29,7 +29,9 @@ const in4Days = new Date(today);
 in4Days.setDate(today.getDate() + 4);
 
 function tileContentFactory(progressEntries: Progress[]) {
-  const datesToAddClassTo = progressEntries.map((entry) => entry.date);
+  const datesToAddClassTo = [...progressEntries]
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
+    .map((entry) => entry.date);
 
   return ({ date, view }: TileArgs) => {
     if (view !== "month") return null;
@@ -45,43 +47,29 @@ function tileContentFactory(progressEntries: Progress[]) {
   };
 }
 
-interface CalendarInputProps {  
+interface CalendarInputProps {
   progressEntries: Progress[];
+  onProgressEntriesChange: (progressEntries: Progress[]) => void;
 }
 
-function CalendarInput({ progressEntries }: CalendarInputProps) {
-  const [state, send] = useMachine(machine, {
-    input: {
-      // data: [
-      //   {
-      //     actual: 10,
-      //     goal: 20,
-      //     date: today,
-      //   },
-      //   {
-      //     actual: 50,
-      //     goal: 40,
-      //     date: tomorrow,
-      //   },
-      //   {
-      //     actual: 50,
-      //     goal: 60,
-      //     date: in2Days,
-      //   },
-      //   {
-      //     actual: 70,
-      //     goal: 80,
-      //     date: in3Days,
-      //   },
-      //   {
-      //     actual: 90,
-      //     goal: 100,
-      //     date: in4Days,
-      //   },
-      // ],
-      data: progressEntries,
-    },
-  });
+function CalendarInput({
+  progressEntries,
+  onProgressEntriesChange,
+}: CalendarInputProps) {
+  const [state, send] = useMachine(
+    machine.provide({
+      actions: {
+        onProgressEntriesChange: ({ context }) => {
+          onProgressEntriesChange(context.progressEntries);
+        },
+      },
+    }),
+    {
+      input: {
+        data: progressEntries,
+      },
+    }
+  );
 
   const handleClickDay = (date: Date) => {
     send({ type: "OPEN", data: date });

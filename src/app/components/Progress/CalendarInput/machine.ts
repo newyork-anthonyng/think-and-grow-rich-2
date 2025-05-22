@@ -64,7 +64,7 @@ const machine = createMachine(
                   },
                   SAVE: {
                     target: "closed",
-                    actions: "saveProgressEntry",
+                    actions: ["saveProgressEntry", "onProgressEntriesChange"],
                   },
                   CHANGE_NUMBER_INPUT: {
                     actions: "changeNumberInput",
