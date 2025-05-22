@@ -1,17 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Calendar, { TileArgs } from "react-calendar";
 import { isSameDay } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useMachine } from "@xstate/react";
 import machine from "./machine";
+import { Input } from "@/components/ui/input";
 
 const today = new Date();
 const tomorrow = new Date(today);
@@ -28,13 +28,11 @@ const datesToAddClassTo = [tomorrow, in3Days, in5Days];
 function tileContent({ date, view }: TileArgs) {
   if (view !== "month") return null;
 
-  const shouldAddClass = datesToAddClassTo.find((dDate) =>
+  const shouldAddDecoration = datesToAddClassTo.find((dDate) =>
     isSameDay(dDate, date)
   );
-  if (shouldAddClass) {
-    return (
-      <span className="absolute w-2 h-2 rounded-full bg-green-500" />
-    );
+  if (shouldAddDecoration) {
+    return <span className="absolute w-1 h-1 rounded-full bg-green-600" />;
   }
 
   return null;
@@ -42,32 +40,39 @@ function tileContent({ date, view }: TileArgs) {
 
 function CalendarInput() {
   const [state, send] = useMachine(machine);
-  const [open, setOpen] = useState(false);
 
   const handleClickDay = (date: Date) => {
-    setOpen(true);
+    send({ type: "OPEN", data: date });
   };
 
-  if (state.matches('pending')) {
+  function handleModalOpenChange(open: boolean) {
+    if (!open) {
+      send({ type: "CLOSE" });
+    }
+  }
+
+  if (state.matches("pending")) {
     return null;
   }
 
   return (
     <>
       <Calendar
-        value={state.context.date}
+        value={state.context.selectedDate}
         tileContent={tileContent}
         onClickDay={handleClickDay}
       />
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={state.matches("idle.modal.opened")}
+        onOpenChange={handleModalOpenChange}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </DialogDescription>
+            <DialogTitle>
+              Add entry for {state.context.selectedDate?.toLocaleDateString()}
+            </DialogTitle>
           </DialogHeader>
+          <Input type="number" />
         </DialogContent>
       </Dialog>
     </>

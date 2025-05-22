@@ -5,12 +5,22 @@ const machine = createMachine(
     id: "calendar",
     initial: "pending",
     context: {
-      date: null,
+      currentDate: null,
+      selectedDate: null,
     },
     types: {} as {
       context: {
-        date: Date | null;
+        currentDate: Date | null;
+        selectedDate: Date | null;
       };
+      events:
+        | {
+            type: "OPEN";
+            data: Date;
+          }
+        | {
+            type: "CLOSE";
+          };
     },
     states: {
       pending: {
@@ -19,14 +29,46 @@ const machine = createMachine(
           actions: "cacheTodaysDate",
         },
       },
-      idle: {},
+      idle: {
+        type: "parallel",
+
+        states: {
+          modal: {
+            initial: "closed",
+            states: {
+              closed: {
+                on: {
+                  OPEN: {
+                    target: "opened",
+                    actions: 'cacheSelectedDate'
+                  },
+                },
+              },
+              opened: {
+                on: {
+                  CLOSE: {
+                    target: "closed",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
   {
     actions: {
       cacheTodaysDate: assign(() => {
         return {
-          date: new Date(),
+          currentDate: new Date(),
+        };
+      }),
+      cacheSelectedDate: assign(({ event }) => {
+        assertEvent(event, "OPEN");
+
+        return {
+          selectedDate: event.data,
         };
       }),
     },
