@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Calendar, { TileArgs } from "react-calendar";
 import { isSameDay } from "date-fns";
 import { Value } from "react-calendar/src/shared/types.js";
+import 'react-calendar/dist/Calendar.css';
 
 const today = new Date();
 const tomorrow = new Date(today);
