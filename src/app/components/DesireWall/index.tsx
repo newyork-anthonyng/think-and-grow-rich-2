@@ -18,8 +18,10 @@ function DesireWall() {
 
   if (isViewing) {
     return (
-      <div className="flex flex-col gap-4">
-        <MarkdownEditor.Markdown source={state.context.markdown} />
+      <div className="flex gap-4">
+        <div className="flex-3/4">
+          <MarkdownEditor.Markdown source={state.context.markdown} />
+        </div>
         <div>
           <Button onClick={handleEditClick}>Edit</Button>
         </div>
